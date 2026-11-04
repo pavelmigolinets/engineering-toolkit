@@ -8,9 +8,6 @@ The toolkit has not yet declared a numbered release in this changelog.
 
 ## [Unreleased]
 
-### Added
-- Historical engineering-only changelog reconstructed from the original and current repository histories.
-
 ## 2026-11-04 — Public Engineering Toolkit repository
 
 ### Added
