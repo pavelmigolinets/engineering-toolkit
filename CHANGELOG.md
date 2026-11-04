@@ -1,8 +1,8 @@
 # Changelog
 
-Notable changes to Engineering Toolkit, including its engineering-focused development before the repository was separated from the private Interview Toolkit.
+Notable changes to Engineering Toolkit, including its early development history.
 
-This is a curated feature history, not a verbatim commit log. Historical entries before 2026-11-04 refer to work originally committed in `pavelmigolinets/interview-toolkit`; interview-specific playbooks, project-review tooling, and exercise scaffolding are deliberately excluded. Dates describe development milestones, **not retroactive releases or version tags**.
+This is a curated feature history, not a verbatim commit log. Dates describe development milestones, **not retroactive releases or version tags**.
 
 The toolkit has not yet declared a numbered release in this changelog.
 
@@ -14,7 +14,7 @@ The toolkit has not yet declared a numbered release in this changelog.
 ## 2026-11-04 — Public Engineering Toolkit repository
 
 ### Added
-- Established the standalone `engineering-toolkit` repository with reusable engineering skills, agents, adapters, scripts, and templates, separate from private interview workflows.
+- Established the standalone `engineering-toolkit` repository with reusable engineering skills, agents, adapters, scripts, and templates.
 - Added `independent-review` for blind, read-only second opinions and `review-adjudication` for evidence-based verification of review findings.
 
 ### Changed
@@ -58,7 +58,7 @@ The toolkit has not yet declared a numbered release in this changelog.
 
 ### History and versioning
 
-- Historical entries are based on engineering-related commits from the original private repository and subsequent commits in the standalone repository.
-- The public repository's own Git history begins in November 2026; this changelog records earlier provenance without importing private interview history.
+- Historical entries are reconstructed from development commits and subsequent repository changes.
+- The public repository's own Git history begins in November 2026; earlier entries document the toolkit's development milestones.
 - Future noteworthy changes should be recorded under **Unreleased** using **Added**, **Changed**, **Fixed**, **Removed**, or **Security** as appropriate.
 - When a release is actually tagged, move its entries into a dated version section. Do not assign version numbers to the historical milestones above retroactively.
