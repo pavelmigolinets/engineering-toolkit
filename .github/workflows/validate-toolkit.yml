@@ -17,3 +17,9 @@ jobs:
           python-version: '3.12'
       - name: Validate skill and agent structure
         run: python3 scripts/validate-toolkit.py
+
+      - name: Check installer syntax and behavior
+        run: |
+          bash -n scripts/install-skills.sh
+          bash -n scripts/install-agents.sh
+          bash scripts/test-installers.sh
