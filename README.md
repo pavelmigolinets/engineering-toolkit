@@ -38,12 +38,14 @@ Use `$code-review` in Codex or `/code-review` in Claude Code to invoke the share
 | Skill | Focus |
 | --- | --- |
 | `code-review` | General code review with quick, standard, and deep modes |
-| `code-review-agentic` | Experimental specialist-assisted code review and existing PR/MR feedback verification |
+| `code-review-agentic` | Experimental specialist-assisted code review, optional Markdown reports, and existing PR/MR feedback verification |
 | `test-review` | Read-only test effectiveness, missing scenarios, and flakiness |
 | `test-writing` | Write focused automated tests and regressions using existing conventions |
 | `jvm-concurrency-review` | Java/Kotlin concurrency and runtime correctness |
 | `architecture-review` | System boundaries, reliability, data consistency, scalability, and trade-offs |
 | `architecture-review-agentic` | Experimental specialist-assisted architecture assessment |
+| `independent-review` | Blind second opinion in a fresh session, without previous findings |
+| `review-adjudication` | Verify existing findings, compare reviews, and recheck fixes |
 
 Example invocations: `$test-review` in Codex, `/test-review` in Claude Code. After pulling new skills, rerun `bash scripts/install-skills.sh all` to link them into both agents.
 
@@ -56,6 +58,8 @@ $code-review help
 $test-writing help
 $architecture-review help
 $code-review-agentic help
+$independent-review help
+$review-adjudication help
 ```
 
 For Claude Code, use `/code-review help`, `/test-writing help`, etc. The same pattern applies to **all installed skills**. `help` and `--help` are instructions to the agent, **not** a formally validated command-line interface.
@@ -70,6 +74,8 @@ Use **one skill matching the immediate task**, rather than running every review 
 | --- | --- |
 | Find actionable implementation defects | `code-review` |
 | Independently assess complex changes with targeted specialists | `code-review-agentic` |
+| Obtain a blind second opinion in a fresh session | `independent-review` |
+| Check whether review findings are valid or fixed | `review-adjudication` |
 | Identify missing tests, weak assertions, or flaky tests without editing | `test-review` |
 | Add focused tests or reproduce a bug with a regression test | `test-writing` |
 | Investigate Java/Kotlin races, cancellation, or thread-pool behavior | `jvm-concurrency-review` |
@@ -84,7 +90,7 @@ For a second opinion on the **same commit or immutable code snapshot**, use [ind
 
 After both reviews finish, use [review-adjudication](prompts/review-adjudication.md) to verify disagreements against source and tests. Different model opinions are evidence to investigate, not votes.
 
-These are reusable **prompts, not installed skills**. They are intentionally separate from the skill invocations above.
+The corresponding `independent-review` and `review-adjudication` **skills** are installed by the skill installer. The linked prompts remain reusable as plain Markdown instructions when working in an environment without skill discovery.
 
 ## Reusable agent instruction templates
 
@@ -132,6 +138,24 @@ $code-review-agentic https://github.com/owner/repo/pull/123; Comments: verify
 GitHub/GitLab MCP connectors must be configured **separately in the local agent runtime**; this repository does not install or authenticate them. Existing comments are read-only inputs. A resolved thread alone is not evidence that its concern is fixed, and the independent reviewer is kept blind to prior comments.
 
 See the [A/B benchmark protocol](docs/agentic-review-benchmark.md). Compare both variants in fresh sessions against the **same immutable commit range** and measure verified review quality, cost, time, and token usage.
+
+### Saving a review report for verification
+
+Agentic code review prints its consolidated findings in chat by default. To preserve a Markdown report for a separate verification session:
+
+```text
+$code-review-agentic Mode: changes; Target: main; Depth: deep; Output: both; Report: .reviews/code-review.md
+```
+
+`Output: chat` (default) writes nothing; `Output: markdown` saves the final report; `Output: both` displays and saves it. The report is written **only when requested** and never overwrites an existing file without permission.
+
+Open a fresh session and verify the findings:
+
+```text
+$review-adjudication Findings: .reviews/code-review.md; Mode: verify; Snapshot: HEAD
+```
+
+For a genuinely blind second opinion, use `$independent-review` in a **fresh session without providing the saved report**. Only use `review-adjudication` after you want the agent to inspect the previous findings.
 
 ## Agent catalog and architecture reviews
 
