@@ -44,6 +44,8 @@ Use `$code-review` in Codex or `/code-review` in Claude Code to invoke the share
 | `jvm-concurrency-review` | Java/Kotlin concurrency and runtime correctness |
 | `architecture-review` | System boundaries, reliability, data consistency, scalability, and trade-offs |
 | `architecture-review-agentic` | Experimental specialist-assisted architecture assessment |
+| `independent-review` | Blind second opinion in a fresh session |
+| `review-adjudication` | Verify existing findings and recheck fixes |
 | `independent-review` | Blind second opinion in a fresh session, without previous findings |
 | `review-adjudication` | Verify existing findings, compare reviews, and recheck fixes |
 
@@ -60,6 +62,8 @@ $architecture-review help
 $code-review-agentic help
 $independent-review help
 $review-adjudication help
+$independent-review help
+$review-adjudication help
 ```
 
 For Claude Code, use `/code-review help`, `/test-writing help`, etc. The same pattern applies to **all installed skills**. `help` and `--help` are instructions to the agent, **not** a formally validated command-line interface.
@@ -74,6 +78,8 @@ Use **one skill matching the immediate task**, rather than running every review 
 | --- | --- |
 | Find actionable implementation defects | `code-review` |
 | Independently assess complex changes with targeted specialists | `code-review-agentic` |
+| Obtain a blind second opinion in a fresh session | `independent-review` |
+| Verify existing findings or whether fixes addressed them | `review-adjudication` |
 | Obtain a blind second opinion in a fresh session | `independent-review` |
 | Check whether review findings are valid or fixed | `review-adjudication` |
 | Identify missing tests, weak assertions, or flaky tests without editing | `test-review` |
@@ -156,6 +162,24 @@ $review-adjudication Findings: .reviews/code-review.md; Mode: verify; Snapshot: 
 ```
 
 For a genuinely blind second opinion, use `$independent-review` in a **fresh session without providing the saved report**. Only use `review-adjudication` after you want the agent to inspect the previous findings.
+
+### Optional Markdown reports and finding verification
+
+By default, `code-review-agentic` writes no files. To save its **final consolidated report** for verification in a new session:
+
+```text
+$code-review-agentic Mode: changes; Target: main; Depth: deep; Output: both; Report: .reviews/code-review.md
+```
+
+`Output: chat` (default) writes nothing; `Output: markdown` saves the report; `Output: both` saves and displays it. Existing files are never overwritten without approval.
+
+To challenge the saved findings in a fresh session:
+
+```text
+$review-adjudication Findings: .reviews/code-review.md; Mode: verify; Snapshot: HEAD
+```
+
+For a genuinely blind second opinion, use `$independent-review` in a **fresh session without providing the previous report**. Use `review-adjudication` when you intentionally want to evaluate prior findings.
 
 ## Agent catalog and architecture reviews
 
