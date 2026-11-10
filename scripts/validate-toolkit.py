@@ -10,16 +10,37 @@ errors = []
 skills = sorted((ROOT / "skills").glob("*/SKILL.md"))
 if not skills:
     errors.append("No skills/*/SKILL.md found")
+
+seen_names = set()
 for path in skills:
     text = path.read_text(encoding="utf-8")
+    relative = path.relative_to(ROOT)
     if not text.startswith("---\n") or "\n---\n" not in text[4:]:
-        errors.append(f"{path.relative_to(ROOT)}: missing YAML frontmatter")
+        errors.append(f"{relative}: missing YAML frontmatter")
         continue
-    header = text.split("\n---\n", 1)[0]
-    if not re.search(r"(?m)^name:\s*\S+", header):
-        errors.append(f"{path.relative_to(ROOT)}: missing name")
+    header, body = text[4:].split("\n---\n", 1)
+    name_match = re.search(r"(?m)^name:\s*(\S+)\s*$", header)
+    if not name_match:
+        errors.append(f"{relative}: missing name")
+    else:
+        name = name_match.group(1)
+        if name != path.parent.name:
+            errors.append(f"{relative}: name '{name}' must match directory '{path.parent.name}'")
+        if name in seen_names:
+            errors.append(f"{relative}: duplicate skill name '{name}'")
+        seen_names.add(name)
     if not re.search(r"(?m)^description:\s*\S+", header):
-        errors.append(f"{path.relative_to(ROOT)}: missing description")
+        errors.append(f"{relative}: missing description")
+    if not body.strip():
+        errors.append(f"{relative}: empty skill instructions")
+
+    # Only validate explicitly named local reference files, not arbitrary
+    # examples, URLs, or paths to other repositories.
+    for ref in set(re.findall(r"(?<![\w/])references/([\w./-]+\.md)\b", body)):
+        target = (path.parent / "references" / ref).resolve()
+        references_dir = (path.parent / "references").resolve()
+        if not target.is_relative_to(references_dir) or not target.is_file():
+            errors.append(f"{relative}: missing local reference references/{ref}")
 
 agents = sorted((ROOT / "agents").glob("*.md"))
 for agent in agents:
